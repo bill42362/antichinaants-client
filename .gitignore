@@ -1,0 +1,6 @@
+.DS_Store
+*.swp
+*backup*
+node_modules/
+ssl/
+logs/

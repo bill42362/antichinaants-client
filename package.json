@@ -1,0 +1,29 @@
+{
+  "name": "antichinaants-client",
+  "version": "1.0.0",
+  "description": "Client website for anti-china-ants project.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bill42362/antichinaants-client.git"
+  },
+  "keywords": [
+    "flancradical",
+    "anti-china-ants"
+  ],
+  "author": "Pi-Yin Hsiao",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bill42362/antichinaants-client/issues"
+  },
+  "homepage": "https://github.com/bill42362/antichinaants-client#readme",
+  "dependencies": {
+    "debug": "^2.2.0",
+    "fs": "0.0.2",
+    "hapi": "^13.4.0",
+    "http2": "^3.3.4"
+  }
+}
