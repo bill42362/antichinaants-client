@@ -13,24 +13,16 @@ let listener = Http2.createServer({
 });
 listener.address = listener.address || function() { return this._server.address() }
 
+let routes = [
+    { method: 'get', path: '/{param*}', handler: { directory: {
+        path: 'dist/html', redirectToSlash: true, index: ['index.js'],
+    } } },
+    { method: 'get', path: '/js/{param*}', handler: { directory: { path: 'dist/js', } } },
+];
+
 server.connection({listener: listener, port: '3000', tls: true});
 server.register(Inert, () => {});
-
-server.route({
-    method: 'get', path: '/{param*}',
-    handler: {
-        directory: {
-            path: 'dist/html',
-            redirectToSlash: true,
-            index: ['index.js'],
-        }
-    }
-});
-server.route({
-    method: 'get', path: '/js/{param*}',
-    handler: { directory: { path: 'dist/js', } }
-});
-
+server.route(routes);
 server.start(err => {
     err && Debug('http2:error')(err);
     Debug('http2')(`Started ${server.connections.length} connections`);
