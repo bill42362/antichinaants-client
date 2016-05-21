@@ -15,9 +15,10 @@ listener.address = listener.address || function() { return this._server.address(
 
 let routes = [
     { method: 'get', path: '/{param*}', handler: { directory: {
-        path: 'dist/html', redirectToSlash: true, index: ['index.html'],
+        path: 'dist/html/reception', redirectToSlash: true, index: ['index.html'],
     } } },
     { method: 'get', path: '/js/{param*}', handler: { directory: { path: 'dist/js', } } },
+    { method: 'get', path: '/css/{param*}', handler: { directory: { path: 'dist/css', } } },
 ];
 
 server.connection({listener: listener, port: '3000', tls: true});
