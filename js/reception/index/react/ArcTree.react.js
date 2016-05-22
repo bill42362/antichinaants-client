@@ -9,24 +9,18 @@ class ArcTree extends React.Component {
         this.staticStrings = {
             previousStep: {string: '上一步', context: 'Button display of go previous step button.'},
         };
-        this.state = {
-            points: [
-                {id: '0', degree: 0},
-                {id: '1', degree: 15},
-                {id: '2', degree: 30},
-                {id: '3', degree: 60},
-                {id: '4', degree: 120},
-                {id: '5', degree: 240},
-            ],
-            links: [
-                {fromId: '0', toId: '1'},
-                {fromId: '0', toId: '2'},
-                {fromId: '0', toId: '4'},
-                {fromId: '1', toId: '3'},
-                {fromId: '1', toId: '5'},
-                {fromId: '2', toId: '5'},
-            ],
-        };
+        this.state = { points: [], links: [], };
+        const pointCount = 50;
+        for(let i = 0; i < pointCount; ++i) {
+            this.state.points.push({id: i, degree: i*360/pointCount});
+        }
+        const linkCount = 50;
+        for(let i = 0; i < linkCount; ++i) {
+            this.state.links.push({
+                fromId: Math.floor(pointCount*Core.random()),
+                toId: Math.floor(pointCount*Core.random()),
+            });
+        }
         this.context = undefined;
         this.transformToCanvas = this.transformToCanvas.bind(this);
         //this.logout = this.logout.bind(this);
@@ -48,6 +42,26 @@ class ArcTree extends React.Component {
         const unitPoint = {x: Math.sin(arc), y: Math.cos(arc)};
         return {x: center.x + unitPoint.x*radius, y: center.y + unitPoint.y*radius};
     }
+    getDegreePairs(links, points) {
+        return links.map(link => {
+            var fromDegree = undefined, toDegree = undefined;
+            points.forEach(point => {
+                if(link.fromId === point.id) { fromDegree = point.degree; }
+                else if(link.toId === point.id) { toDegree = point.degree; }
+            });
+            return {from: fromDegree, to: toDegree};
+        });
+    }
+    getBezierCurves(pointPairs, center = {x: 0, y: 0}) {
+        return pointPairs.map(pointPair => {
+            return {
+                from: pointPair.from,
+                cp1: {x: 0.5*(pointPair.from.x + center.x), y: 0.5*(pointPair.from.y + center.y)},
+                cp2: {x: 0.5*(pointPair.to.x + center.x), y: 0.5*(pointPair.to.y + center.y)},
+                to: pointPair.to,
+            };
+        });
+    }
     draw() {
         const canvas = this.refs.canvas;
         const ctx = this.context;
@@ -55,6 +69,14 @@ class ArcTree extends React.Component {
         const zoom = 0.4*canvas.height;
         const circleSize = 4;
         const origin = t({x: 0, y: 0}, zoom);
+        const degreePairs = this.getDegreePairs(this.state.links, this.state.points);
+        const pointPairs = degreePairs.map(degreePair => {
+            return {
+                from: t(this.getPointFromDegree(degreePair.from), zoom),
+                to: t(this.getPointFromDegree(degreePair.to), zoom),
+            };
+        }, this);
+        const bezierCurves = this.getBezierCurves(pointPairs, origin);
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.beginPath();
@@ -66,7 +88,16 @@ class ArcTree extends React.Component {
                     circleSize
                 );
             }, this);
-        ctx.fill();
+            // Draw besier curves.
+            bezierCurves.forEach(curve => {
+                ctx.moveTo(curve.from.x, curve.from.y);
+                ctx.bezierCurveTo(
+                    curve.cp1.x, curve.cp1.y,
+                    curve.cp2.x, curve.cp2.y,
+                    curve.to.x, curve.to.y
+                );
+            });
+        ctx.stroke();
     }
     componentDidMount() {
         const canvas = this.refs.canvas;
@@ -83,8 +114,10 @@ class ArcTree extends React.Component {
                 <div className='panel-heading'>Arc Tree</div>
                 <div className='panel-body row'>
                     <div className='col-md-6'>
-                        <div className='ratio-wrap-16-9'>
-                            <canvas ref='canvas' className='arc-tree-canvas'></canvas>
+                        <div className='thumbnail'>
+                            <div className='ratio-wrap-16-9'>
+                                <canvas ref='canvas' className='arc-tree-canvas'></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
