@@ -41,6 +41,11 @@ html {
 body {
     a.anchor { display: block; position: relative; top: -@headerHeight; visibility: hidden; }
     div.alert.alert-fadeout { .animation(fadeout, 2.0s, 2s); }
+    div.ratio-wrap-16-9 {
+        width: 100%;
+        padding-bottom: 56.25%;
+        position: relative;
+    }
     div.panel-heading button.btn.pull-right {
         margin-left: 0.5em;
         &.highlighted { background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), }
@@ -131,25 +136,24 @@ body {
             }
         }
     }
+    div.option-toggles button.btn:focus { outline: none !important; }
+    div.image-drop-zone div.image-drop-zone-ui.well { margin-bottom: 0px; }
     & > div#app-root div#wrapper {
         & > header#header > nav.navbar > div.container-fluid { margin-right: 5px; }
         & > div.container-fluid {
             padding-top: @headerHeight; padding-bottom: @footerHeight;
-            div.option-toggles {
-                button.btn:focus {
-                    outline: none !important;
-                }
-            }
-            div.image-drop-zone {
-                div.image-drop-zone-ui.well {
-                    margin-bottom: 0px;
-                }
-            }
             div.page-anchor-list {
                 position: fixed;
                 width: inherit;
                 padding-right: 15px;
                 top: @headerHeight;
+            }
+            div.arc-tree {
+                canvas.arc-tree-canvas {
+                    position: absolute;
+                    width: 100%; height: 100%;
+                    background-color: mistyrose;
+                }
             }
         }
         & > footer#footer {
