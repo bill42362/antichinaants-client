@@ -1,4 +1,4 @@
-
+// gulpfile.js
 var gulp = require('gulp');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
@@ -26,6 +26,16 @@ var distTargets = {
 var cssDistTargets = {
     reception: ['index'],
 };
+
+var runServer = function() {
+    const App = require('./app.js');
+    return true;
+}
+gulp.task('server', function() {
+    var shouldRunServer = (-1 != process.argv.indexOf('-s'));
+    if(shouldRunServer) { runServer(); }
+    return true;
+});
 
 var errorHandler = function(target, error, self) {
     util.log(
@@ -236,7 +246,7 @@ gulp.task('css-lib', function() {
 });
 
 gulp.task('lib', ['js-lib', 'css-lib', 'compile-lib', 'fonts-lib']);
-gulp.task('dist', ['js-dist', 'css-dist', 'img-dist', 'html-dist', 'lib']);
+gulp.task('dist', ['js-dist', 'css-dist', 'img-dist', 'html-dist', 'lib', 'server']);
 
 gulp.task('watch', function() {
     gulp.watch('./js/**/*.js*', ['js-dist']);
