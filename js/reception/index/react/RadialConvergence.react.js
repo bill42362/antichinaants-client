@@ -1,9 +1,9 @@
-// ArcTree.react.js
+// RadialConvergence.react.js
 'use strict'
 import React from 'react';
 import ClassNames from 'classnames';
 
-class ArcTree extends React.Component {
+class RadialConvergence extends React.Component {
     constructor(props) {
         super(props);
         this.staticStrings = {
@@ -108,15 +108,15 @@ class ArcTree extends React.Component {
         this.draw();
     }
     render() {
-        return <div className='arc-tree'>
-            <a id='arcTree' className='anchor'></a>
+        return <div className='radial-convergence'>
+            <a id='radialConvergence' className='anchor'></a>
             <div className='panel panel-primary'>
-                <div className='panel-heading'>Arc Tree</div>
+                <div className='panel-heading'>Radial Convergence</div>
                 <div className='panel-body row'>
                     <div className='col-md-6'>
                         <div className='thumbnail'>
                             <div className='ratio-wrap-16-9'>
-                                <canvas ref='canvas' className='arc-tree-canvas'></canvas>
+                                <canvas ref='canvas' className='radial-convergence-canvas'></canvas>
                             </div>
                         </div>
                     </div>
@@ -126,7 +126,7 @@ class ArcTree extends React.Component {
         </div>;
     }
 }
-module.exports = ArcTree;
+module.exports = RadialConvergence;
 
 //* vim: filetype=php.javascript.jsx
 //* vim: dictionary=~/.vim/dict/javascript.dict
