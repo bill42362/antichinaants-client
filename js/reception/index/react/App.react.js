@@ -3,7 +3,7 @@
 import React from 'react';
 import ClassNames from 'classnames';
 import Header from '../../../common/react/Header.react.js';
-import RadialConvergence from './RadialConvergence.react.js';
+import DataPanel from './DataPanel.react.js';
 import Footer from '../../../common/react/Footer.react.js';
 
 class App extends React.Component {
@@ -19,7 +19,7 @@ class App extends React.Component {
                         </div>
                     </div>
                     <div className="col-md-10">
-                        <RadialConvergence />
+                        <DataPanel />
                     </div>
                 </div>
             </div>

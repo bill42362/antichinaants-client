@@ -6,24 +6,6 @@ import ClassNames from 'classnames';
 class RadialConvergence extends React.Component {
     constructor(props) {
         super(props);
-        this.staticStrings = {
-            previousStep: {string: '上一步', context: 'Button display of go previous step button.'},
-        };
-        this.state = { points: [], links: [], };
-        const pointCount = 70;
-        for(let i = 0; i < pointCount; ++i) {
-            this.state.points.push({id: i, degree: i*360/pointCount});
-        }
-        const linkCount = 20;
-        for(let i = 0; i < linkCount; ++i) {
-            this.state.links.push({
-                fromId: Math.floor(pointCount*Core.random()),
-                toId: Math.floor(pointCount*Core.random()),
-            });
-        }
-        for(let i = 0; i < linkCount; ++i) {
-            this.state.links.push({fromId: 1, toId: i,});
-        }
         this.context = undefined;
         this.transformToCanvas = this.transformToCanvas.bind(this);
         //this.logout = this.logout.bind(this);
@@ -77,9 +59,9 @@ class RadialConvergence extends React.Component {
         const ctx = this.context;
         const t = this.transformToCanvas;
         const zoom = 0.4*canvas.height;
-        const circleSize = 4;
+        const circleSize = 2.5;
         const origin = t({x: 0, y: 0}, zoom);
-        const degreePairs = this.getDegreePairs(this.state.links, this.state.points);
+        const degreePairs = this.getDegreePairs(this.props.links, this.props.points);
         const pointPairs = degreePairs.map(degreePair => {
             return {
                 from: t(this.getPointFromDegree(degreePair.from), zoom),
@@ -89,15 +71,19 @@ class RadialConvergence extends React.Component {
         const bezierCurves = this.getBezierCurves(pointPairs, origin);
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#888';
         ctx.beginPath();
             ctx.arc(origin.x, origin.y, 1, 0, Math.PI*2, true);
             // Draw points.
-            this.state.points.forEach(point => {
+            this.props.points.forEach(point => {
                 this.drawCircle(
                     t(this.getPointFromDegree(point.degree), zoom),
                     circleSize
                 );
             }, this);
+        ctx.fill();
+        ctx.strokeStyle = '#555';
+        ctx.beginPath();
             // Draw besier curves.
             bezierCurves.forEach(curve => {
                 ctx.moveTo(curve.from.x, curve.from.y);
@@ -118,22 +104,8 @@ class RadialConvergence extends React.Component {
         this.draw();
     }
     render() {
-        return <div className='radial-convergence'>
-            <a id='radialConvergence' className='anchor'></a>
-            <div className='panel panel-primary'>
-                <div className='panel-heading'>Radial Convergence</div>
-                <div className='panel-body row'>
-                    <div className='col-md-6'>
-                        <div className='thumbnail'>
-                            <div className='ratio-wrap-16-9'>
-                                <canvas ref='canvas' className='radial-convergence-canvas'></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className='panel-footer'>Footer</div>
-            </div>
-        </div>;
+        return <canvas ref='canvas' className='radial-convergence-canvas'>
+        </canvas>;
     }
 }
 module.exports = RadialConvergence;
