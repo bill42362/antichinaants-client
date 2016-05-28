@@ -10,16 +10,19 @@ class RadialConvergence extends React.Component {
             previousStep: {string: '上一步', context: 'Button display of go previous step button.'},
         };
         this.state = { points: [], links: [], };
-        const pointCount = 50;
+        const pointCount = 70;
         for(let i = 0; i < pointCount; ++i) {
             this.state.points.push({id: i, degree: i*360/pointCount});
         }
-        const linkCount = 50;
+        const linkCount = 20;
         for(let i = 0; i < linkCount; ++i) {
             this.state.links.push({
                 fromId: Math.floor(pointCount*Core.random()),
                 toId: Math.floor(pointCount*Core.random()),
             });
+        }
+        for(let i = 0; i < linkCount; ++i) {
+            this.state.links.push({fromId: 1, toId: i,});
         }
         this.context = undefined;
         this.transformToCanvas = this.transformToCanvas.bind(this);
@@ -54,10 +57,17 @@ class RadialConvergence extends React.Component {
     }
     getBezierCurves(pointPairs, center = {x: 0, y: 0}) {
         return pointPairs.map(pointPair => {
+            var f = pointPair.from, t = pointPair.to, c = center;
             return {
                 from: pointPair.from,
-                cp1: {x: 0.5*(pointPair.from.x + center.x), y: 0.5*(pointPair.from.y + center.y)},
-                cp2: {x: 0.5*(pointPair.to.x + center.x), y: 0.5*(pointPair.to.y + center.y)},
+                cp1: {
+                    x: (f.x + f.x + f.x + t.x + t.x + c.x)/6,
+                    y: (f.y + f.y + f.y + t.y + t.y + c.y)/6,
+                },
+                cp2: {
+                    x: (f.x + f.x + t.x + t.x + t.x + c.x)/6,
+                    y: (f.y + f.y + t.y + t.y + t.y + c.y)/6,
+                },
                 to: pointPair.to,
             };
         });
