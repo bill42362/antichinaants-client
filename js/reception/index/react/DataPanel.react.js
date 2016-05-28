@@ -3,6 +3,7 @@
 import React from 'react';
 import ClassNames from 'classnames';
 import RadialConvergence from './RadialConvergence.react.js';
+import MouseTracker from './MouseTracker.react.js';
 
 class DataPanel extends React.Component {
     constructor(props) {
@@ -25,8 +26,12 @@ class DataPanel extends React.Component {
         for(let i = 0; i < linkCount; ++i) {
             this.state.links.push({fromId: 1, toId: i,});
         }
-        //this.logout = this.logout.bind(this);
+        this.onMouseMove = this.onMouseMove.bind(this);
         // Operations usually carried out in componentWillMount go here
+    }
+    onMouseMove() {
+        var mouseState = this.refs.mouseTracker.state;
+        console.log('axis:', mouseState.axis, ', move:', mouseState.move);
     }
     componentDidMount() {
     }
@@ -41,6 +46,10 @@ class DataPanel extends React.Component {
                         <div className='thumbnail'>
                             <div className='ratio-wrap-16-9'>
                                 <RadialConvergence points={state.points} links={state.links}/>
+                                <MouseTracker
+                                    ref='mouseTracker'
+                                    onMouseMove={this.onMouseMove}
+                                />
                             </div>
                         </div>
                     </div>
