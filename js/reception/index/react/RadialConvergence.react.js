@@ -19,8 +19,11 @@ class RadialConvergence extends React.Component {
     }
     drawCircle(center, radius) {
         const ctx = this.context;
-        ctx.moveTo(center.x + radius, center.y);
-        ctx.arc(center.x, center.y, radius, 0, Math.PI*2, true);
+        ctx.fillStyle = '#888';
+        ctx.beginPath();
+            ctx.moveTo(center.x + radius, center.y);
+            ctx.arc(center.x, center.y, radius, 0, Math.PI*2, true);
+        ctx.fill();
     }
     getPointFromDegree(degree, center = {x: 0, y: 0}, radius = 1) {
         const arc = Math.PI*degree/180;
@@ -71,17 +74,16 @@ class RadialConvergence extends React.Component {
         const bezierCurves = this.getBezierCurves(pointPairs, origin);
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#888';
-        ctx.beginPath();
-            ctx.arc(origin.x, origin.y, 1, 0, Math.PI*2, true);
-            // Draw points.
-            this.props.points.forEach(point => {
-                this.drawCircle(
-                    t(this.getPointFromDegree(point.degree), zoom),
-                    circleSize
-                );
-            }, this);
-        ctx.fill();
+        // Draw points.
+        this.props.points.forEach(point => {
+            this.drawCircle(
+                t(this.getPointFromDegree(point.degree), zoom),
+                circleSize
+            );
+            let mousePosition = this.props.mousePosition;
+            var isPointInPath = ctx.isPointInPath(mousePosition.x, mousePosition.y);
+            if(isPointInPath) { console.log('Hover point:', point); }
+        }, this);
         ctx.strokeStyle = '#555';
         ctx.beginPath();
             // Draw besier curves.
