@@ -14,17 +14,20 @@ class DataPanel extends React.Component {
         this.state = { points: [], links: [], mousePosition: {x: -1, y: -1}, };
         const pointCount = 70;
         for(let i = 0; i < pointCount; ++i) {
-            this.state.points.push({id: i, degree: i*360/pointCount});
+            this.state.points.push({id: Core.newUuid(), degree: i*360/pointCount});
         }
         const linkCount = 20;
         for(let i = 0; i < linkCount; ++i) {
             this.state.links.push({
-                fromId: Math.floor(pointCount*Core.random()),
-                toId: Math.floor(pointCount*Core.random()),
+                fromId: this.state.points[Math.floor(pointCount*Core.random())].id,
+                toId: this.state.points[Math.floor(pointCount*Core.random())].id,
             });
         }
         for(let i = 0; i < linkCount; ++i) {
-            this.state.links.push({fromId: 1, toId: i,});
+            this.state.links.push({
+                fromId: this.state.points[1].id,
+                toId: this.state.points[i].id,
+            });
         }
         this.onMouseMove = this.onMouseMove.bind(this);
         // Operations usually carried out in componentWillMount go here
