@@ -23,13 +23,27 @@ class RadialConvergence extends React.Component {
         var result = {x: center.x + unitInPixel*point.x, y: center.y - unitInPixel*point.y};
         return result;
     }
-    drawCircle(center, radius, opt_style) {
+    drawCircle(center, opt_radius, opt_style) {
         const ctx = this.context;
+        let radius = opt_radius || 2;
         ctx.fillStyle = opt_style || '#888';
         ctx.beginPath();
             ctx.moveTo(center.x + radius, center.y);
             ctx.arc(center.x, center.y, radius, 0, Math.PI*2, true);
         ctx.fill();
+    }
+    drawLink(curve, opt_lineWidth, opt_style) {
+        const ctx = this.context;
+        ctx.lineWidth = opt_lineWidth || 1;
+        ctx.strokeStyle = opt_style || '#555';
+        ctx.beginPath();
+            ctx.moveTo(curve.from.x, curve.from.y);
+            ctx.bezierCurveTo(
+                curve.cp1.x, curve.cp1.y,
+                curve.cp2.x, curve.cp2.y,
+                curve.to.x, curve.to.y
+            );
+        ctx.stroke();
     }
     getPointFromDegree(degree, center = {x: 0, y: 0}, radius = 1) {
         const arc = Math.PI*degree/180;
@@ -43,13 +57,14 @@ class RadialConvergence extends React.Component {
                 if(link.fromId === point.id) { fromDegree = point.degree; }
                 else if(link.toId === point.id) { toDegree = point.degree; }
             });
-            return {from: fromDegree, to: toDegree};
+            return {id: link.id, from: fromDegree, to: toDegree};
         });
     }
     getBezierCurves(pointPairs, center = {x: 0, y: 0}) {
         return pointPairs.map(pointPair => {
             var f = pointPair.from, t = pointPair.to, c = center;
             return {
+                id: pointPair.id,
                 from: pointPair.from,
                 cp1: {
                     x: (f.x + f.x + f.x + t.x + t.x + c.x)/6,
@@ -73,6 +88,7 @@ class RadialConvergence extends React.Component {
         const degreePairs = this.getDegreePairs(this.props.links, this.props.points);
         const pointPairs = degreePairs.map(degreePair => {
             return {
+                id: degreePair.id,
                 from: t(this.getPointFromDegree(degreePair.from), zoom),
                 to: t(this.getPointFromDegree(degreePair.to), zoom),
             };
@@ -92,18 +108,15 @@ class RadialConvergence extends React.Component {
             var isPointInPath = ctx.isPointInPath(mousePosition.x, mousePosition.y);
             if(isPointInPath) { hoveringIds.push(point.id); }
         }, this);
-        ctx.strokeStyle = '#555';
-        ctx.beginPath();
-            // Draw besier curves.
-            bezierCurves.forEach(curve => {
-                ctx.moveTo(curve.from.x, curve.from.y);
-                ctx.bezierCurveTo(
-                    curve.cp1.x, curve.cp1.y,
-                    curve.cp2.x, curve.cp2.y,
-                    curve.to.x, curve.to.y
-                );
-            });
-        ctx.stroke();
+        bezierCurves.forEach(curve => {
+            if(-1 != this.state.hoveringIds.indexOf(curve.id)) {
+                this.drawLink(curve, 3, '#8a6d3b');
+            }
+            this.drawLink(curve, 1.5);
+            let mousePosition = this.props.mousePosition;
+            var isPointInStroke = ctx.isPointInStroke(mousePosition.x, mousePosition.y);
+            if(isPointInStroke) { hoveringIds.push(curve.id); }
+        });
 
         if(!this.state.hoveringIds.equals(hoveringIds)) {
             this.setState({hoveringIds: hoveringIds, shouldCallOnChange: true});

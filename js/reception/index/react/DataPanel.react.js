@@ -19,12 +19,14 @@ class DataPanel extends React.Component {
         const linkCount = 20;
         for(let i = 0; i < linkCount; ++i) {
             this.state.links.push({
+                id: Core.newUuid(),
                 fromId: this.state.points[Math.floor(pointCount*Core.random())].id,
                 toId: this.state.points[Math.floor(pointCount*Core.random())].id,
             });
         }
         for(let i = 0; i < linkCount; ++i) {
             this.state.links.push({
+                id: Core.newUuid(),
                 fromId: this.state.points[1].id,
                 toId: this.state.points[i].id,
             });
