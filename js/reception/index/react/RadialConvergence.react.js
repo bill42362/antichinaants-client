@@ -7,7 +7,7 @@ class RadialConvergence extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedIds: [],
+            hoveringIds: [],
             shouldCallOnChange: false,
         };
         this.context = undefined;
@@ -16,7 +16,7 @@ class RadialConvergence extends React.Component {
         //this.logout = this.logout.bind(this);
         // Operations usually carried out in componentWillMount go here
     }
-    getValue() { return this.state.selectedIds; }
+    getValue() { return this.state.hoveringIds; }
     transformToCanvas(point, unitInPixel = Number(5)) {
         const canvas = this.refs.canvas;
         const center = {x: canvas.width/2, y: canvas.height/2};
@@ -78,19 +78,19 @@ class RadialConvergence extends React.Component {
             };
         }, this);
         const bezierCurves = this.getBezierCurves(pointPairs, origin);
-        let selectedIds = [];
+        let hoveringIds = [];
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         // Draw points.
         this.props.points.forEach(point => {
             var pointCenter = t(this.getPointFromDegree(point.degree), zoom);
-            if(-1 != this.state.selectedIds.indexOf(point.id)) {
+            if(-1 != this.state.hoveringIds.indexOf(point.id)) {
                 this.drawCircle(pointCenter, 2*circleSize, '#8a6d3b');
             }
             this.drawCircle(pointCenter, circleSize);
             let mousePosition = this.props.mousePosition;
             var isPointInPath = ctx.isPointInPath(mousePosition.x, mousePosition.y);
-            if(isPointInPath) { selectedIds.push(point.id); }
+            if(isPointInPath) { hoveringIds.push(point.id); }
         }, this);
         ctx.strokeStyle = '#555';
         ctx.beginPath();
@@ -105,8 +105,8 @@ class RadialConvergence extends React.Component {
             });
         ctx.stroke();
 
-        if(!this.state.selectedIds.equals(selectedIds)) {
-            this.setState({selectedIds: selectedIds, shouldCallOnChange: true});
+        if(!this.state.hoveringIds.equals(hoveringIds)) {
+            this.setState({hoveringIds: hoveringIds, shouldCallOnChange: true});
         }
     }
     componentDidMount() {
@@ -120,7 +120,7 @@ class RadialConvergence extends React.Component {
     componentDidUpdate(prevProps, prevState) {
         this.draw();
         if(this.state.shouldCallOnChange && this.props.onChange) {
-            this.props.onChange(this.state.selectedIds);
+            this.props.onChange(this.state.hoveringIds);
             this.setState({shouldCallOnChange: false});
         }
     }
