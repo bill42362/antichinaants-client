@@ -6,20 +6,26 @@ import ClassNames from 'classnames';
 class RadialConvergence extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            selectedIds: [],
+            shouldCallOnChange: false,
+        };
         this.context = undefined;
         this.transformToCanvas = this.transformToCanvas.bind(this);
+        this.getValue = this.getValue.bind(this);
         //this.logout = this.logout.bind(this);
         // Operations usually carried out in componentWillMount go here
     }
+    getValue() { return this.state.selectedIds; }
     transformToCanvas(point, unitInPixel = Number(5)) {
         const canvas = this.refs.canvas;
         const center = {x: canvas.width/2, y: canvas.height/2};
         var result = {x: center.x + unitInPixel*point.x, y: center.y - unitInPixel*point.y};
         return result;
     }
-    drawCircle(center, radius) {
+    drawCircle(center, radius, opt_style) {
         const ctx = this.context;
-        ctx.fillStyle = '#888';
+        ctx.fillStyle = opt_style || '#888';
         ctx.beginPath();
             ctx.moveTo(center.x + radius, center.y);
             ctx.arc(center.x, center.y, radius, 0, Math.PI*2, true);
@@ -72,17 +78,19 @@ class RadialConvergence extends React.Component {
             };
         }, this);
         const bezierCurves = this.getBezierCurves(pointPairs, origin);
+        let selectedIds = [];
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         // Draw points.
         this.props.points.forEach(point => {
-            this.drawCircle(
-                t(this.getPointFromDegree(point.degree), zoom),
-                circleSize
-            );
+            var pointCenter = t(this.getPointFromDegree(point.degree), zoom);
+            if(-1 != this.state.selectedIds.indexOf(point.id)) {
+                this.drawCircle(pointCenter, 2*circleSize, '#8a6d3b');
+            }
+            this.drawCircle(pointCenter, circleSize);
             let mousePosition = this.props.mousePosition;
             var isPointInPath = ctx.isPointInPath(mousePosition.x, mousePosition.y);
-            if(isPointInPath) { console.log('Hover point:', point); }
+            if(isPointInPath) { selectedIds.push(point.id); }
         }, this);
         ctx.strokeStyle = '#555';
         ctx.beginPath();
@@ -96,6 +104,10 @@ class RadialConvergence extends React.Component {
                 );
             });
         ctx.stroke();
+
+        if(!this.state.selectedIds.equals(selectedIds)) {
+            this.setState({selectedIds: selectedIds, shouldCallOnChange: true});
+        }
     }
     componentDidMount() {
         const canvas = this.refs.canvas;
@@ -105,7 +117,13 @@ class RadialConvergence extends React.Component {
         this.context.translate(0.5, 0.5);
         this.draw();
     }
-    componentDidUpdate(prevProps, prevState) { this.draw(); }
+    componentDidUpdate(prevProps, prevState) {
+        this.draw();
+        if(this.state.shouldCallOnChange && this.props.onChange) {
+            this.props.onChange(this.state.selectedIds);
+            this.setState({shouldCallOnChange: false});
+        }
+    }
     render() {
         return <canvas ref='canvas' className='radial-convergence-canvas'>
         </canvas>;
