@@ -7,6 +7,7 @@ class RadialConvergence extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            antialiasingFactor: 2,
             hoveringIds: [],
             shouldCallOnChange: false,
         };
@@ -25,7 +26,7 @@ class RadialConvergence extends React.Component {
     }
     drawCircle(center, opt_radius, opt_style) {
         const ctx = this.context;
-        let radius = opt_radius || 2;
+        let radius = opt_radius || 4;
         ctx.fillStyle = opt_style || '#888';
         ctx.beginPath();
             ctx.moveTo(center.x + radius, center.y);
@@ -34,7 +35,7 @@ class RadialConvergence extends React.Component {
     }
     drawLink(curve, opt_lineWidth, opt_style) {
         const ctx = this.context;
-        ctx.lineWidth = opt_lineWidth || 1;
+        ctx.lineWidth = opt_lineWidth || 3;
         ctx.strokeStyle = opt_style || '#555';
         ctx.beginPath();
             ctx.moveTo(curve.from.x, curve.from.y);
@@ -79,13 +80,20 @@ class RadialConvergence extends React.Component {
         });
     }
     draw() {
+        const state = this.state;
+        const props = this.props;
+        const antialiasingFactor = state.antialiasingFactor;
+        const mousePosition = {
+            x: antialiasingFactor*props.mousePosition.x,
+            y: antialiasingFactor*props.mousePosition.y,
+        };
         const canvas = this.refs.canvas;
         const ctx = this.context;
         const t = this.transformToCanvas;
         const zoom = 0.4*canvas.height;
-        const circleSize = 2.5;
+        const circleSize = 5;
         const origin = t({x: 0, y: 0}, zoom);
-        const degreePairs = this.getDegreePairs(this.props.links, this.props.points);
+        const degreePairs = this.getDegreePairs(props.links, props.points);
         const pointPairs = degreePairs.map(degreePair => {
             return {
                 id: degreePair.id,
@@ -98,35 +106,34 @@ class RadialConvergence extends React.Component {
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         // Draw points.
-        this.props.points.forEach(point => {
+        props.points.forEach(point => {
             var pointCenter = t(this.getPointFromDegree(point.degree), zoom);
-            if(-1 != this.state.hoveringIds.indexOf(point.id)) {
+            if(-1 != state.hoveringIds.indexOf(point.id)) {
                 this.drawCircle(pointCenter, 2*circleSize, '#8a6d3b');
             }
             this.drawCircle(pointCenter, circleSize);
-            let mousePosition = this.props.mousePosition;
             var isPointInPath = ctx.isPointInPath(mousePosition.x, mousePosition.y);
             if(isPointInPath) { hoveringIds.push(point.id); }
         }, this);
         bezierCurves.forEach(curve => {
-            if(-1 != this.state.hoveringIds.indexOf(curve.id)) {
-                this.drawLink(curve, 3, '#8a6d3b');
+            if(-1 != state.hoveringIds.indexOf(curve.id)) {
+                this.drawLink(curve, 6, '#8a6d3b');
             }
-            this.drawLink(curve, 1.5);
-            let mousePosition = this.props.mousePosition;
+            this.drawLink(curve, 3);
             var isPointInStroke = ctx.isPointInStroke(mousePosition.x, mousePosition.y);
             if(isPointInStroke) { hoveringIds.push(curve.id); }
         });
 
-        if(!this.state.hoveringIds.equals(hoveringIds)) {
+        if(!state.hoveringIds.equals(hoveringIds)) {
             this.setState({hoveringIds: hoveringIds, shouldCallOnChange: true});
         }
     }
     componentDidMount() {
         const canvas = this.refs.canvas;
-        canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight;
+        let antialiasingFactor = this.state.antialiasingFactor;
         this.context = canvas.getContext('2d');
-        this.context.canvas.width = canvas.clientWidth; this.context.canvas.height = canvas.clientHeight;
+        this.context.canvas.width = antialiasingFactor*canvas.clientWidth;
+        this.context.canvas.height = antialiasingFactor*canvas.clientHeight;
         this.context.translate(0.5, 0.5);
         this.draw();
     }
