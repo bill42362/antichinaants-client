@@ -11,7 +11,7 @@ class DataPanel extends React.Component {
         this.staticStrings = {
             previousStep: {string: '上一步', context: 'Button display of go previous step button.'},
         };
-        this.state = { points: [], links: [], };
+        this.state = { points: [], links: [], mousePosition: {x: -1, y: -1}, };
         const pointCount = 70;
         for(let i = 0; i < pointCount; ++i) {
             this.state.points.push({id: i, degree: i*360/pointCount});
@@ -31,7 +31,7 @@ class DataPanel extends React.Component {
     }
     onMouseMove() {
         var mouseState = this.refs.mouseTracker.state;
-        console.log('axis:', mouseState.axis, ', move:', mouseState.move);
+        this.setState({mousePosition: mouseState.axis});
     }
     componentDidMount() {
     }
@@ -45,7 +45,10 @@ class DataPanel extends React.Component {
                     <div className='col-md-6'>
                         <div className='thumbnail'>
                             <div className='ratio-wrap-16-9'>
-                                <RadialConvergence points={state.points} links={state.links}/>
+                                <RadialConvergence
+                                    points={state.points} links={state.links}
+                                    mousePosition={state.mousePosition}
+                                />
                                 <MouseTracker
                                     ref='mouseTracker'
                                     onMouseMove={this.onMouseMove}

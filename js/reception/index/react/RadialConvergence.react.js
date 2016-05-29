@@ -103,6 +103,7 @@ class RadialConvergence extends React.Component {
         this.context.translate(0.5, 0.5);
         this.draw();
     }
+    componentDidUpdate(prevProps, prevState) { this.draw(); }
     render() {
         return <canvas ref='canvas' className='radial-convergence-canvas'>
         </canvas>;

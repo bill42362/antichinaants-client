@@ -43,9 +43,13 @@ class MouseTracker extends React.Component {
         };
     }
     componentDidUpdate(prevProps, prevState) {
-        this.state.callBackFunctions.forEach(callBackFunction => {
-            callBackFunction(this.state);
-        });
+        var callBackFunctions = this.state.callBackFunctions.concat();
+        if(callBackFunctions.length) {
+            callBackFunctions.forEach(callBackFunction => {
+                callBackFunction(this.state);
+            });
+            this.setState({callBackFunctions: []});
+        }
     }
     render() {
         const state = this.state;
