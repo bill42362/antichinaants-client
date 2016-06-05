@@ -109,7 +109,7 @@ class RadialConvergence extends React.Component {
         props.points.forEach(point => {
             var pointCenter = t(this.getPointFromDegree(point.degree), zoom);
             if(-1 != state.hoveringIds.indexOf(point.id)) {
-                this.drawCircle(pointCenter, 2*circleSize, '#8a6d3b');
+                this.drawCircle(pointCenter, 2*circleSize, '#bce8f1');
             }
             this.drawCircle(pointCenter, circleSize);
             var isPointInPath = ctx.isPointInPath(mousePosition.x, mousePosition.y);
@@ -117,7 +117,7 @@ class RadialConvergence extends React.Component {
         }, this);
         bezierCurves.forEach(curve => {
             if(-1 != state.hoveringIds.indexOf(curve.id)) {
-                this.drawLink(curve, 6, '#8a6d3b');
+                this.drawLink(curve, 9, '#bce8f1');
             }
             this.drawLink(curve, 3);
             var isPointInStroke = ctx.isPointInStroke(mousePosition.x, mousePosition.y);
@@ -145,8 +145,9 @@ class RadialConvergence extends React.Component {
         }
     }
     render() {
-        return <canvas ref='canvas' className='radial-convergence-canvas'>
-        </canvas>;
+        return <canvas
+            ref='canvas' className='figure-canvas figure-canvas-radial-convergence'
+        ></canvas>;
     }
 }
 module.exports = RadialConvergence;

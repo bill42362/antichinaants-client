@@ -3,6 +3,7 @@
 import React from 'react';
 import ClassNames from 'classnames';
 import RadialConvergence from './RadialConvergence.react.js';
+import SemanticPolarGrid from './SemanticPolarGrid.react.js';
 import MouseTracker from './MouseTracker.react.js';
 
 class DataPanel extends React.Component {
@@ -11,11 +12,16 @@ class DataPanel extends React.Component {
         this.staticStrings = {
             previousStep: {string: '上一步', context: 'Button display of go previous step button.'},
         };
-        this.state = { points: [], links: [], mousePosition: {x: -1, y: -1}, };
+        this.state = {
+            points: [], links: [],
+            mousePosition: {x: -1, y: -1}, selectedPointId: '',
+        };
         const pointCount = 70;
         for(let i = 0; i < pointCount; ++i) {
             this.state.points.push({id: Core.newUuid(), degree: i*360/pointCount});
         }
+        // TODO: Hard coded point.
+        this.state.selectedPointId = this.state.points[1].id;
         const linkCount = 20;
         for(let i = 0; i < linkCount; ++i) {
             this.state.links.push({
@@ -57,6 +63,16 @@ class DataPanel extends React.Component {
                                 <MouseTracker
                                     ref='mouseTracker'
                                     onMouseMove={this.onMouseMove}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className='col-md-6'>
+                        <div className='thumbnail'>
+                            <div className='ratio-wrap-16-9'>
+                                <SemanticPolarGrid
+                                    rootPointId={state.selectedPointId}
+                                    points={state.points} links={state.links}
                                 />
                             </div>
                         </div>
