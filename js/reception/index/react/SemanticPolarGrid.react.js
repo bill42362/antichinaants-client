@@ -4,11 +4,11 @@ import React from 'react';
 import ClassNames from 'classnames';
 
 class TreeNode {
-    constructor(pointId, parentNodeId = '', layer = 0) {
+    constructor(pointId, parentNode, layer = 0) {
         this.pointId = pointId;
         this.forwardChildNodeIds = [];
         this.backwordChildNodeIds = [];
-        this.parentNodeId = parentNodeId;
+        this.parentNode = parentNode;
         this.layer = layer;
     }
 }
@@ -16,7 +16,7 @@ class TreeNode {
 class SemanticPolarGrid extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { maxTreeLayer: 5, fullCircleLayer: 3, antialiasingFactor: 2, };
+        this.state = { maxTreeLayer: 5, fullCircleLayer: 4, antialiasingFactor: 2, };
         this.context = undefined;
         this.transformToCanvas = this.transformToCanvas.bind(this);
         // Operations usually carried out in componentWillMount go here
@@ -59,7 +59,7 @@ class SemanticPolarGrid extends React.Component {
                 tempNodes = nodeLayers[i - 1].reduce((prevNodes, node) => {
                     let childNodeIds = node.forwardChildNodeIds.concat(node.backwordChildNodeIds);
                     return prevNodes.concat(childNodeIds.map(nodeId => {
-                        return new TreeNode(nodeId, node.pointId, i);
+                        return new TreeNode(nodeId, node, i);
                     }));
                 }, []);
             }
@@ -107,9 +107,11 @@ class SemanticPolarGrid extends React.Component {
             thisNodes.forEach(node => {
                 let childNodeIdsCount = node.forwardChildNodeIds.length + node.backwordChildNodeIds.length;
                 let maxOuterNodeIndex = minOuterNodeIndex + childNodeIdsCount - 1;
-                node.degree = 0.5*(outerNodes[minOuterNodeIndex].degree + outerNodes[maxOuterNodeIndex].degree);
-                node.point = t(this.getPointFromDegree(node.degree, undefined, radius), 1);
-                minOuterNodeIndex = maxOuterNodeIndex + 1;
+                if(maxOuterNodeIndex >= minOuterNodeIndex) {
+                    node.degree = 0.5*(outerNodes[minOuterNodeIndex].degree + outerNodes[maxOuterNodeIndex].degree);
+                    node.point = t(this.getPointFromDegree(node.degree, undefined, radius), 1);
+                    minOuterNodeIndex = maxOuterNodeIndex + 1;
+                }
             });
         }
 
@@ -123,10 +125,7 @@ class SemanticPolarGrid extends React.Component {
             let innerNodes = nodeLayers[index - 1] || [];
             nodes.forEach(node => {
                 if(node.point) { 
-                    let parentNode = innerNodes.filter(innerNode => {
-                        return node.parentNodeId === innerNode.pointId;
-                    })[0];
-                    if(parentNode) { this.drawLine(node.point, parentNode.point); }
+                    if(node.parentNode) { this.drawLine(node.point, node.parentNode.point); }
                 }
             }, this);
         }, this);
