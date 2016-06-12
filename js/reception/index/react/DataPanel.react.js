@@ -40,11 +40,22 @@ class DataPanel extends React.Component {
         }
         */
         this.onMouseMove = this.onMouseMove.bind(this);
+        this.onHoveringIdsChange = this.onHoveringIdsChange.bind(this);
         // Operations usually carried out in componentWillMount go here
     }
     onMouseMove() {
         var mouseState = this.refs.mouseTracker.state;
         this.setState({mousePosition: mouseState.axis});
+    }
+    onHoveringIdsChange() {
+        let state = this.state;
+        let ids = this.refs.radialConvergence.getValue();
+        let hoveredPoints = state.points.filter(point => {
+            return -1 != ids.indexOf(point.id);
+        });
+        if(hoveredPoints[0]) {
+            this.setState({selectedPointId: hoveredPoints[0].id});
+        }
     }
     componentDidMount() {
     }
@@ -59,8 +70,10 @@ class DataPanel extends React.Component {
                         <div className='thumbnail'>
                             <div className='ratio-wrap-16-9'>
                                 <RadialConvergence
+                                    ref='radialConvergence'
                                     points={state.points} links={state.links}
                                     mousePosition={state.mousePosition}
+                                    onChange={this.onHoveringIdsChange}
                                 />
                                 <MouseTracker
                                     ref='mouseTracker'
