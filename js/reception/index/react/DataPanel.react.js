@@ -22,7 +22,7 @@ class DataPanel extends React.Component {
         }
         // TODO: Hard coded point.
         this.state.selectedPointId = this.state.points[1].id;
-        const linkCount = 20;
+        const linkCount = 60;
         for(let i = 0; i < linkCount; ++i) {
             this.state.links.push({
                 id: Core.newUuid(),
@@ -30,6 +30,7 @@ class DataPanel extends React.Component {
                 toId: this.state.points[Math.floor(pointCount*Core.random())].id,
             });
         }
+        /*
         for(let i = 0; i < linkCount; ++i) {
             this.state.links.push({
                 id: Core.newUuid(),
@@ -37,6 +38,7 @@ class DataPanel extends React.Component {
                 toId: this.state.points[i].id,
             });
         }
+        */
         this.onMouseMove = this.onMouseMove.bind(this);
         // Operations usually carried out in componentWillMount go here
     }
