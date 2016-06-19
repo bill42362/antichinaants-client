@@ -18,7 +18,7 @@ class DataPanel extends React.Component {
         };
         const pointCount = 70;
         for(let i = 0; i < pointCount; ++i) {
-            this.state.points.push({id: Core.newUuid(), degree: i*360/pointCount});
+            this.state.points.push({id: Core.newUuid()});
         }
         // TODO: Hard coded point.
         this.state.selectedPointId = this.state.points[1].id;

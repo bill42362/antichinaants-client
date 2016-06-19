@@ -6,7 +6,11 @@ import ClassNames from 'classnames';
 class RadialConvergence extends React.Component {
     constructor(props) {
         super(props);
+        props.points.forEach((point, index) => {
+            point.degree = index*360/props.points.length;
+        });
         this.state = {
+            points: props.points,
             antialiasingFactor: 2,
             hoveringIds: [],
             shouldCallOnChange: false,
@@ -93,7 +97,7 @@ class RadialConvergence extends React.Component {
         const zoom = 0.4*canvas.height;
         const circleSize = 5;
         const origin = t({x: 0, y: 0}, zoom);
-        const degreePairs = this.getDegreePairs(props.links, props.points);
+        const degreePairs = this.getDegreePairs(props.links, state.points);
         const pointPairs = degreePairs.map(degreePair => {
             return {
                 id: degreePair.id,
