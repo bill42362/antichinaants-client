@@ -16,7 +16,7 @@ class TreeNode {
 class SemanticPolarGrid extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { maxTreeLayer: 5, fullCircleLayer: 4, antialiasingFactor: 2, };
+        this.state = { maxTreeLayer: 6, fullCircleLayer: 4, antialiasingFactor: 2, };
         this.context = undefined;
         this.transformToCanvas = this.transformToCanvas.bind(this);
         // Operations usually carried out in componentWillMount go here
@@ -115,6 +115,53 @@ class SemanticPolarGrid extends React.Component {
             });
         }
 
+        for(let i = fullCircleLayer + 1; i < state.maxTreeLayer; ++i) {
+            let thisNodes = nodeLayers[i];
+            let innerNodes = nodeLayers[i - 1];
+            let radius = i*zoom/(state.maxTreeLayer - 1);
+            let lastDegree = 0, sameParentCount = 0;
+            thisNodes.forEach((thisNode, index) => {
+                let parentNode = thisNode.parentNode;
+                let parentNodeIndex = innerNodes.indexOf(parentNode);
+
+                let parentNodePrev = innerNodes[parentNodeIndex - 1];
+                let minDegree = undefined;
+                if(parentNodePrev) {
+                    minDegree = 0.5*(parentNodePrev.degree + parentNode.degree);
+                } else {
+                    parentNodePrev = innerNodes[innerNodes.length - 1];
+                    // Rolling back min degree for head parentNode.
+                    minDegree = 0.5*(-(360 - parentNodePrev.degree) + parentNode.degree);
+
+                    // Rolling back lastDegree for first node.
+                    if(0 === lastDegree) { lastDegree = minDegree; }
+                }
+
+                let parentNodePost = innerNodes[parentNodeIndex + 1];
+                let maxDegree = undefined;
+                if(parentNodePost) {
+                    maxDegree = 0.5*(parentNodePost.degree + parentNode.degree);
+                } else {
+                    parentNodePost = innerNodes[0];
+                    // Rolling forward max degree for tail parentNode.
+                    maxDegree = 0.5*(360 + parentNodePost.degree + parentNode.degree);
+                }
+
+                let siblingNodeCount = parentNode.forwardChildNodeIds.length + parentNode.backwordChildNodeIds.length;
+                let degreeStep = Math.abs(maxDegree - minDegree)/(siblingNodeCount + 1);
+                thisNode.degree = lastDegree + degreeStep;
+                thisNode.point = t(this.getPointFromDegree(thisNode.degree, undefined, radius), 1);
+
+                lastDegree = thisNode.degree;
+                ++sameParentCount;
+                if(siblingNodeCount === sameParentCount) {
+                    // Add tail margin for last node of the same parentNode.
+                    lastDegree += degreeStep;
+                    sameParentCount = 0;
+                }
+            });
+        }
+
         // Draw points.
         nodeLayers.forEach(nodes => {
             nodes.forEach(node => { if(node.point) { this.drawCircle(node.point); } }, this);
@@ -124,8 +171,8 @@ class SemanticPolarGrid extends React.Component {
         nodeLayers.forEach((nodes, index) => {
             let innerNodes = nodeLayers[index - 1] || [];
             nodes.forEach(node => {
-                if(node.point) { 
-                    if(node.parentNode) { this.drawLine(node.point, node.parentNode.point); }
+                if(node.point && node.parentNode) { 
+                    this.drawLine(node.point, node.parentNode.point);
                 }
             }, this);
         }, this);

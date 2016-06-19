@@ -28,6 +28,3 @@ class App extends React.Component {
     }
 }
 module.exports = App;
-
-//* vim: filetype=php.javascript.jsx
-//* vim: dictionary=~/.vim/dict/javascript.dict
