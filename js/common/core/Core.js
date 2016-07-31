@@ -28,6 +28,31 @@ Core.getCookieByName = function(name) {
 	return cookieValue;
 }
 
+Core.ajax = function(url, method = 'get', data = {}, success, error) {
+    let responseAJAX = function() {
+        if(httpRequest.readyState === XMLHttpRequest.DONE) {
+            if(200 === httpRequest.status && httpRequest.response) {
+                success && success(JSON.parse(httpRequest.response));
+            } else {
+                error && error(JSON.parse(httpRequest.response));
+            }
+        }
+    }
+    let httpRequest = new XMLHttpRequest();
+    if(httpRequest) {
+        httpRequest.onreadystatechange = responseAJAX;
+        if(data.gets) {
+            url += '?';
+            for(let key in data.gets) { url += key + '=' + data.gets[key] + '&'; }
+            url = url.replace(/&$/g, '');
+        }
+        httpRequest.open(method, url);
+        httpRequest.send(data.post);
+    } else {
+        console.error('Cannot send ajax.');
+    }
+}
+
 Core.parseDate = function(date) {
     var result;
     if(isNaN(date)) { result = new Date(date); }

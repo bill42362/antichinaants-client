@@ -18,6 +18,7 @@ App.prototype.routes = [
     } } },
     { method: 'get', path: '/js/{param*}', handler: { directory: { path: 'dist/js', } } },
     { method: 'get', path: '/css/{param*}', handler: { directory: { path: 'dist/css', } } },
+    { method: 'get', path: '/data/{param*}', handler: { directory: { path: 'data/', } } },
 ];
 App.prototype.run = function() {
     const server = this.server;

@@ -141,6 +141,13 @@ class RadialConvergence extends React.Component {
         this.context.translate(0.5, 0.5);
         this.draw();
     }
+    componentWillReceiveProps(nextProps) {
+        let points = nextProps.points.map((point, index) => {
+            point.degree = index*360/nextProps.points.length;
+            return point;
+        });
+        this.setState({points: points});
+    }
     componentDidUpdate(prevProps, prevState) {
         this.draw();
         if(this.state.shouldCallOnChange && this.props.onChange) {

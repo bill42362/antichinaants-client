@@ -57,7 +57,9 @@ class DataPanel extends React.Component {
             this.setState({selectedPointId: hoveredPoints[0].id});
         }
     }
-    componentDidMount() {
+    componentDidMount() { }
+    componentWillReceiveProps(nextProps) {
+        this.setState({points: nextProps.points, links: nextProps.links});
     }
     render() {
         const state = this.state;
