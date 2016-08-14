@@ -4,6 +4,7 @@ import React from 'react';
 import ClassNames from 'classnames';
 import RadialConvergence from './RadialConvergence.react.js';
 import SemanticPolarGrid from './SemanticPolarGrid.react.js';
+import DetailTable from './DetailTable.react.js';
 import MouseTracker from './MouseTracker.react.js';
 
 class DataPanel extends React.Component {
@@ -63,6 +64,9 @@ class DataPanel extends React.Component {
     }
     render() {
         const state = this.state;
+        let selectedData = state.points.filter(point => {
+            return state.selectedPointId === point.id;
+        })[0];
         return <div className='data-panel'>
             <a id='dataPanel' className='anchor'></a>
             <div className='panel panel-primary'>
@@ -95,6 +99,7 @@ class DataPanel extends React.Component {
                         </div>
                     </div>
                 </div>
+                <DetailTable data={selectedData} />
                 <div className='panel-footer'>Footer</div>
             </div>
         </div>;

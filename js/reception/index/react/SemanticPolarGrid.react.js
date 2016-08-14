@@ -16,7 +16,7 @@ class TreeNode {
 class SemanticPolarGrid extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { maxTreeLayer: 6, fullCircleLayer: 4, antialiasingFactor: 2, };
+        this.state = { maxTreeLayer: 4, fullCircleLayer: 3, antialiasingFactor: 2, };
         this.context = undefined;
         this.transformToCanvas = this.transformToCanvas.bind(this);
         // Operations usually carried out in componentWillMount go here

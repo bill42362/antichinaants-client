@@ -22,7 +22,7 @@ class App extends React.Component {
     onGetKMTDataSuccess(response) {
         let origNodes = response.nodes;
         let origLinks = response.links;
-        origNodes.length = 130;
+        //origNodes.length = 130;
         let points = origNodes.map(node => {
             node.id = Core.newUuid();
             return node;

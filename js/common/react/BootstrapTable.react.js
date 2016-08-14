@@ -27,7 +27,7 @@ var BootstrapTable = React.createClass({
             <thead>
                 <tr>
                     {titleList.map(function(title, index) {
-                        return <th className="" key={index}>{title.string}</th>;
+                        return <th className="" key={index}>{title.display || title.string}</th>;
                     }, this)}
                 </tr>
             </thead>
